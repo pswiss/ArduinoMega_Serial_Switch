@@ -10,11 +10,12 @@ TODO:         Enable sending RX to the serial ports
 /////////////////////////////////////////////////////////*/
 // Definitions and Variables ------------------------------
 #define BAUD_RATE_COMPUTER_INTERFACE    115200
-int whichPort = '1';
+int whichPort = 1;
 
 // Code ---------------------------------------------------
 void setup() 
 {
+  delay(500);
   // Begin the Arduino <-> PC serial communication
   Serial.begin(BAUD_RATE_COMPUTER_INTERFACE);
   Serial.println("System ON");
@@ -23,31 +24,43 @@ void setup()
   long deviceBaudRate = 0;
   // Device 1
   Serial.print("Serial baud rate for device 1:\t");
-  while(serial.available()==0){} 
+  while(Serial.available()==0){} 
   delay(10);
   deviceBaudRate = Serial.parseInt();
   Serial1.begin(deviceBaudRate);
   Serial.println(deviceBaudRate);
+  while(Serial.available()>0)
+    {
+      Serial.read();
+    }
 
   // Device 2
   Serial.print("Serial baud rate for device 2:\t");
-  while(serial.available()==0){} 
+  while(Serial.available()==0){} 
   delay(10);
   deviceBaudRate = Serial.parseInt();
   Serial2.begin(deviceBaudRate);
   Serial.println(deviceBaudRate);
+  while(Serial.available()>0)
+  {
+      Serial.read();
+  }
 
   // Device 3
   Serial.print("Serial baud rate for device 3:\t");
-  while(serial.available()==0){} 
+  while(Serial.available()==0){}
   delay(10);
   deviceBaudRate = Serial.parseInt();
   Serial3.begin(deviceBaudRate);
   Serial.println(deviceBaudRate);
+  while(Serial.available()>0)
+  {
+      Serial.read();
+  }
 
   // Enter main loop
   Serial.println("Enter Main Loop: Press number corresponding to device to switch which device is reported");
-  delay(1000)
+  delay(1000);
 }
 
 void loop() 
@@ -55,34 +68,47 @@ void loop()
   // Check for change 
   if(Serial.available()>0)
   {
-    whichPort = Serial.read();
+    long temp = Serial.parseInt();
+    delay(50);
     while(Serial.available()>0)
     {
       Serial.read();
     }
-    Serial.println("-------------------------------------------------------");
-    Serial.print("Switch to device "); Serial.print(whichPort);
-    Serial.println("-------------------------------------------------------");
+    // Only accept valid inputs
+    if((temp==1)||(temp==2)||(temp==3))
+    {
+      if(temp!=whichPort)
+      {
+        whichPort = temp;
+        Serial.println("-------------------------------------------------------");
+        Serial.print("Switch to device "); Serial.println(whichPort);
+        Serial.println("-------------------------------------------------------");
+      }
+    }
+    else
+    {
+      Serial.println("Invalid port specified");
+    }
   }
 
   // Report based on which serial port
   switch(whichPort)
   {
-    case '1':
+    case 1:
       while(Serial1.available()>0)
       {
         Serial.print(Serial1.read());
       }
     break;
 
-    case '2':
+    case 2:
       while(Serial2.available()>0)
       {
         Serial.print(Serial2.read());
       }
     break;
 
-    case '3':
+    case 3:
       while(Serial3.available()>0)
       {
         Serial.print(Serial3.read());
@@ -90,7 +116,8 @@ void loop()
     break;
 
     default:
-      Serial.print("Invalid device specified: "); Serial.print(whichPort);
+      Serial.print("Invalid device specified: "); Serial.println(whichPort);
+      delay(500);
     break;
   }
 
