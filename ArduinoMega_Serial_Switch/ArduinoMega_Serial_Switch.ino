@@ -97,21 +97,21 @@ void loop()
     case 1:
       while(Serial1.available()>0)
       {
-        Serial.print(Serial1.read());
+        Serial.write(Serial1.read());
       }
     break;
 
     case 2:
       while(Serial2.available()>0)
       {
-        Serial.print(Serial2.read());
+        Serial.write(Serial2.read());
       }
     break;
 
     case 3:
       while(Serial3.available()>0)
       {
-        Serial.print(Serial3.read());
+        Serial.write(Serial3.read());
       }
     break;
 
